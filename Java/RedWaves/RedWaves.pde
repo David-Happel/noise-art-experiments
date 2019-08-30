@@ -70,9 +70,9 @@ int samplesPerFrame = 1;
 int numFrames = 200;
 float shutterAngle = 0.7;
 
-boolean recording = false;
+boolean recording = true;
 
-Line[] lines = new Line[10];
+Line[] lines = new Line[50];
 
 void setup(){
   size(800, 800, P3D);
@@ -80,37 +80,68 @@ void setup(){
   for(int l = 0; l < lines.length; l++){
     lines[l] = new Line();
   }
+  camera(400, 0, 0, 400, 400, 0, 1, 0, 1);
 
 }
 
 void draw_(){
   background(0);
+  translate(400, 0, 0);
+  rotateY(TWO_PI*t);
+
+  //noFill();
+  //stroke(0,100,0);
+  //rect(-400,0,400,800);
+
   for(int l = 0; l < lines.length; l++){
     lines[l].drawAt(t);
   }
+  rotateY(-TWO_PI*t);
+  strokeWeight(3);
+
+  translate(-400,0,0);
+  //noFill();
+  //stroke(0,100,0);
+  //rect(0,0,800,800);
+
 }
 
 class Line {
-  NoiseLoop noise;
+  NoiseLoop rNoise;
+  NoiseLoop zNoise;
   float speed;
   float thickness;
   float opp;
+  float rotation;
 
   Line(){
     float r = random(-10000, 10000);
     speed = random(0.5,1.5);
-    thickness = random(1,5);
-    opp = random(0,255);
-    noise = new NoiseLoop(1.5,-400,400,r,0,0);
+    thickness = random(10,40);
+    opp = random(100,255);
+    rNoise = new NoiseLoop(1,-1,1,r,0,0);
+    zNoise = new NoiseLoop(1.5,-100,100,r+200,0,0);
+    rotation = random(0,1);    
   }
 
   void drawAt(float t){
-    stroke(opp,0,0);
     strokeWeight(thickness);
-    for(int i = 0; i < 400; i++){
-
-      float off = noise.valueAt(((t*TWO_PI)+(i/800f)*speed));
-      point((float)(400 + off), 800f/400f*i);
+    for(int i = 0; i < 1200; i++){
+      // float xOff = xNoise.valueAt(i/400f*TWO_PI);
+      // float zOff = zNoise.valueAt(i/400f*TWO_PI);  
+      float rOff = rNoise.valueAt((i/400f)+(TWO_PI*t)); 
+      float r = rotation + rOff;
+      float closeness = map(i,0,1200,1,0);
+      float x = sin(TWO_PI*r)*200*closeness;
+      float y = cos(TWO_PI*r)*200*closeness;
+      strokeWeight(thickness*closeness*closeness*closeness);
+      if(closeness<0.4){
+        stroke(opp*map(closeness,0,0.4,0,1),0,0);
+      }else{
+        stroke(opp,0,0);
+      }
+      
+      point(x, 800f/200f*i, y);
     }
   }
 }
