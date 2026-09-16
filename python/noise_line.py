@@ -10,12 +10,12 @@ clock = pygame.time.Clock()
 pygame.init()
 
 
-width = 800
-height = 50
+width = 50
+height = 800
 screen = pygame.display.set_mode((width, height))
 
 n_points = 100
-noise = noise_loop(300, 0, height, 0, 0)
+noise = noise_loop(300, 0, width, 0, 0)
 
 t_offset = 0.01
 
@@ -24,7 +24,10 @@ def draw(t):
     surface = pygame.Surface((width, height), pygame.SRCALPHA)
 
     points = [
-        Point(800 * (i / (n_points - 1)), (noise.eval(t - (i * t_offset), 0.005 * i)))
+        Point(
+            noise.eval(t - (i * t_offset), 0.005 * i),
+            height * (i / (n_points - 1)),
+        )
         for i in range(n_points)
     ]
     # for point in points:
