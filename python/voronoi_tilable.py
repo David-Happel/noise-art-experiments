@@ -1,4 +1,3 @@
-from PIL.ImageChops import offset
 from utils.point import Point
 import os
 
@@ -42,11 +41,15 @@ screen = pygame.display.set_mode((width, height))
 
 done = False
 
-layers = 1
+layers = 8
+colors = [(255, 0, 0, 255 * (l / layers)) for l in range(layers)]
 
-n_points = 20
+n_points = 5
 
-initial_points = [Point.randspawn(0, width, 0, height) for i in range(n_points)]
+initial_points = [
+    [Point.randspawn(0, width, 0, height) for i in range(n_points)]
+    for l in range(layers)
+]
 
 noise = [noise_loop(1, 0, 5, layer * 100, 100) for layer in range(layers)]
 
@@ -66,7 +69,7 @@ def draw(t):
             for i in range(n_points)
         ]
 
-        moved_points = [p + o for p, o in zip(initial_points, noise_offsets)]
+        moved_points = [p + o for p, o in zip(initial_points[layer], noise_offsets)]
 
         # for point in moved_points:
         #     pygame.draw.circle(
@@ -75,37 +78,23 @@ def draw(t):
 
         vor = Voronoi([p.to_tuple() for p in points_for_voronoi(moved_points)])
 
-        for ridge in vor.ridge_vertices:
-            ver2 = vor.vertices[ridge[1]]
-            ver1 = None
-            if ridge[0] == -1:
-                distLeft = ver2[0]
-                distRight = width - distLeft
-                distTop = ver2[1]
-                distBottom = height - distTop
-                if (
-                    distLeft < distRight
-                    and distLeft < distTop
-                    and distLeft < distBottom
-                ):
-                    ver1 = np.array([0, ver2[1]])
-                elif (
-                    distRight < distLeft
-                    and distRight < distTop
-                    and distRight < distBottom
-                ):
-                    ver1 = np.array([width, ver2[1]])
-                elif (
-                    distTop < distLeft and distTop < distRight and distTop < distBottom
-                ):
-                    ver1 = np.array([ver2[0], 0])
-                else:
-                    ver1 = np.array([ver2[0], height])
-            else:
-                ver1 = vor.vertices[ridge[0]]
+        nodes: list[Point] = [Point(v[0], v[1]) for v in vor.vertices]
+        # for ridge in vor.ridge_vertices:
+        #     if (ridge[0] == -1) or (ridge[1] == -1):
+        #         continue
 
-            pygame.draw.line(surface, (255, 0, 255), ver1, ver2, 4)
+        #     ver1 = vor.vertices[ridge[0]]
+        #     ver2 = vor.vertices[ridge[1]]
 
+        #     pygame.draw.line(surface, (255, 0, 255), ver1, ver2, 4)
+        for node in nodes:
+            pygame.draw.circle(
+                surface,
+                color=colors[layer],
+                center=node.to_tuple(),
+                radius=(5 * (layer / layers)) + 3,
+            )
+    surface = pygame.transform.gaussian_blur(surface=surface, radius=3)
     screen.fill((0, 0, 0, 0))
     screen.blit(surface, (0, 0))
     return surface
