@@ -1,9 +1,10 @@
 from Node import Node
 import pygame.math as math
 
+
 class TreeGenerator:
     def __init__(self):
-        self.parent = Node(None, math.Vector2(0,0))
+        self.parent = Node(None, math.Vector2(0, 0))
         self.pos = self.parent
         self.dir = math.Vector2(0, -1)
         self.stack = []
@@ -34,7 +35,7 @@ class TreeGenerator:
         return self.generate_tree_from_actions(actions)
 
     def forward(self, dist):
-        relative_pos = (self.dir * float(dist))
+        relative_pos = self.dir * float(dist)
         new_node = Node(self.pos, relative_pos)
         self.pos.children.append(new_node)
         self.pos = new_node

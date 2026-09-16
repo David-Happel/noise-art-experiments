@@ -25,9 +25,12 @@ def draw(t):
     screen.fill(0)
 
     for layer in range(layers):
-
         points = np.array(
-            [[noise[layer].eval(t, i), noise[layer].eval(t, i + 1000)] for i in range(20)])
+            [
+                [noise[layer].eval(t, i), noise[layer].eval(t, i + 1000)]
+                for i in range(20)
+            ]
+        )
 
         # for point in points:
         #     pygame.draw.circle(screen, color=(255 * (layer / layers), 0, 255 * (layer / layers)), center=point, radius=3)
@@ -42,21 +45,41 @@ def draw(t):
                 distRight = width - distLeft
                 distTop = ver2[1]
                 distBottom = height - distTop
-                if distLeft < distRight and distLeft < distTop and distLeft < distBottom:
+                if (
+                    distLeft < distRight
+                    and distLeft < distTop
+                    and distLeft < distBottom
+                ):
                     ver1 = np.array([0, ver2[1]])
-                elif distRight < distLeft and distRight < distTop and distRight < distBottom:
+                elif (
+                    distRight < distLeft
+                    and distRight < distTop
+                    and distRight < distBottom
+                ):
                     ver1 = np.array([width, ver2[1]])
-                elif distTop < distLeft and distTop < distRight and distTop < distBottom:
+                elif (
+                    distTop < distLeft and distTop < distRight and distTop < distBottom
+                ):
                     ver1 = np.array([ver2[0], 0])
                 else:
                     ver1 = np.array([ver2[0], height])
             else:
                 ver1 = vor.vertices[ridge[0]]
 
-            pygame.draw.line(screen, (255 * (layer / layers), 0, 255 * (layer / layers)), ver1, ver2, 4)
+            pygame.draw.line(
+                screen,
+                (255 * (layer / layers), 0, 255 * (layer / layers)),
+                ver1,
+                ver2,
+                4,
+            )
 
         points = np.array(
-            [[noise[layer].eval(t, i + 2000), noise[layer].eval(t, i + 3000)] for i in range(60)])
+            [
+                [noise[layer].eval(t, i + 2000), noise[layer].eval(t, i + 3000)]
+                for i in range(60)
+            ]
+        )
 
         # for point in points:
         #     pygame.draw.circle(screen, color=(0, 255 * (layer / layers), 0), center=point, radius=3)
@@ -71,11 +94,21 @@ def draw(t):
                 distRight = width - distLeft
                 distTop = ver2[1]
                 distBottom = height - distTop
-                if distLeft < distRight and distLeft < distTop and distLeft < distBottom:
+                if (
+                    distLeft < distRight
+                    and distLeft < distTop
+                    and distLeft < distBottom
+                ):
                     ver1 = np.array([0, ver2[1]])
-                elif distRight < distLeft and distRight < distTop and distRight < distBottom:
+                elif (
+                    distRight < distLeft
+                    and distRight < distTop
+                    and distRight < distBottom
+                ):
                     ver1 = np.array([width, ver2[1]])
-                elif distTop < distLeft and distTop < distRight and distTop < distBottom:
+                elif (
+                    distTop < distLeft and distTop < distRight and distTop < distBottom
+                ):
                     ver1 = np.array([ver2[0], 0])
                 else:
                     ver1 = np.array([ver2[0], height])
@@ -94,22 +127,24 @@ frame = 0
 
 while not done:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+        if event.type == pygame.QUIT or (
+            event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+        ):
             done = True
 
     if frame >= rec_frames:
         frame = 0
         recording = False
 
-    t = frame/rec_frames
+    t = frame / rec_frames
 
     draw(t)
     if recording:
         print("rec frame: " + str(frame))
-        pygame.image.save(screen, "./out/img"+str(frame)+".png")
+        pygame.image.save(screen, "./out/img" + str(frame) + ".png")
 
     pygame.display.flip()
-    
+
     frame += 1
 
     clock.tick(fps)

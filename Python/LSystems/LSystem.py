@@ -4,6 +4,7 @@ from Node import Node
 from Turtle import Turtle
 import pygame.math as math
 
+
 def flatten(x):
     if isinstance(x, collections.Iterable):
         return [a for i in x for a in flatten(i)]
@@ -12,7 +13,6 @@ def flatten(x):
 
 
 class LSystem:
-
     def __init__(self, axiom, rules, action_map):
         self.axiom = axiom
         self.rules = rules
@@ -29,7 +29,7 @@ class LSystem:
             new_string = self.rules[node.sign]
             result = []
             for sign in new_string:
-                if sign == '_':
+                if sign == "_":
                     result.append(node)
                 else:
                     result.append(Node(sign))
@@ -39,7 +39,7 @@ class LSystem:
 
     def draw(self, screen):
         turtle = Turtle(screen)
-        turtle.draw_nodes(self.action_map, self.nodes, math.Vector2(400,800), 0)
+        turtle.draw_nodes(self.action_map, self.nodes, math.Vector2(400, 800), 0)
 
     def __str__(self):
         return str(self.nodes)

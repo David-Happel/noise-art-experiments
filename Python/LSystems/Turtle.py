@@ -48,7 +48,6 @@ class Turtle:
                 if action[0] == "Pull":
                     temp_depth -= 1
 
-
         for node in nodes:
             if node.sign in action_map:
                 action = action_map[node.sign]
@@ -64,10 +63,16 @@ class Turtle:
 
     def forward(self, dist):
         new_pos = self.pos + (self.dir * float(dist))
-        green = math.Vector3(0,255,0)
+        green = math.Vector3(0, 255, 0)
         brown = math.Vector3(128, 74, 43)
-        depth = (self.max_depth-self.depth)/10
-        pygame.draw.line(self.screen, green.lerp(brown, depth), self.pos, new_pos, max(1,int(depth*3)))
+        depth = (self.max_depth - self.depth) / 10
+        pygame.draw.line(
+            self.screen,
+            green.lerp(brown, depth),
+            self.pos,
+            new_pos,
+            max(1, int(depth * 3)),
+        )
         self.pos = new_pos
 
     def rotate(self, degrees):
