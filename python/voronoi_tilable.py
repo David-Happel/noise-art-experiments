@@ -1,35 +1,23 @@
+from PIL.ImageChops import offset
+from utils.point import Point
 import os
 
 import numpy as np
 import pygame
-from noise_loop import noise_loop
+from utils.noise_loop import noise_loop
 from PIL import Image
 from scipy.spatial import Voronoi
 
-clock = pygame.time.Clock()
 
-width = 800
-height = 800
-
-pygame.init()
-screen = pygame.display.set_mode((width, height))
-
-done = False
-
-layers = 1
-
-noise = [noise_loop(1, 0, 5, layer * 100, 100) for layer in range(layers)]
-
-
-def points_for_voronoi(points):
-    left_points = [[point[0] - width, point[1]] for point in points]
-    top_left = [[point[0] - width, point[1] - height] for point in points]
-    bottom_left = [[point[0] - width, point[1] + height] for point in points]
-    right_points = [[point[0] + width, point[1]] for point in points]
-    top_right = [[point[0] + width, point[1] - height] for point in points]
-    bottom_right = [[point[0] + width, point[1] + height] for point in points]
-    top_points = [[point[0], point[1] - height] for point in points]
-    bottom_points = [[point[0], point[1] + height] for point in points]
+def points_for_voronoi(points: list[Point]) -> list[Point]:
+    left_points = [point + Point(-width, 0) for point in points]
+    top_left = [point + Point(-width, -height) for point in points]
+    bottom_left = [point + Point(-width, height) for point in points]
+    right_points = [point + Point(width, 0) for point in points]
+    top_right = [point + Point(width, -height) for point in points]
+    bottom_right = [point + Point(width, height) for point in points]
+    top_points = [point + Point(0, -height) for point in points]
+    bottom_points = [point + Point(0, height) for point in points]
 
     return [
         *points,
@@ -44,6 +32,25 @@ def points_for_voronoi(points):
     ]
 
 
+clock = pygame.time.Clock()
+
+width = 800
+height = 800
+
+pygame.init()
+screen = pygame.display.set_mode((width, height))
+
+done = False
+
+layers = 1
+
+n_points = 20
+
+initial_points = [Point.randspawn(0, width, 0, height) for i in range(n_points)]
+
+noise = [noise_loop(1, 0, 5, layer * 100, 100) for layer in range(layers)]
+
+
 transparent_black = (0, 0, 0, 0)
 
 
@@ -51,20 +58,22 @@ def draw(t):
     surface = pygame.Surface((width, height), pygame.SRCALPHA)
 
     for layer in range(layers):
-        points = np.array(
-            [
-                [
-                    (noise[layer].eval(t, i * 100)) % 1 * width,
-                    noise[layer].eval(t, (i * 100) + 10000) % 1 * height,
-                ]
-                for i in range(20)
-            ]
-        )
+        noise_offsets = [
+            Point(
+                (noise[layer].eval(t, i * 100)) % 1 * width,
+                noise[layer].eval(t, (i * 100) + 10000) % 1 * height,
+            )
+            for i in range(n_points)
+        ]
 
-        for point in points:
-            pygame.draw.circle(surface, color=(255, 0, 255), center=point, radius=3)
+        moved_points = [p + o for p, o in zip(initial_points, noise_offsets)]
 
-        vor = Voronoi(points_for_voronoi(points))
+        # for point in moved_points:
+        #     pygame.draw.circle(
+        #         surface, color=(255, 0, 255), center=point.to_tuple(), radius=3
+        #     )
+
+        vor = Voronoi([p.to_tuple() for p in points_for_voronoi(moved_points)])
 
         for ridge in vor.ridge_vertices:
             ver2 = vor.vertices[ridge[1]]

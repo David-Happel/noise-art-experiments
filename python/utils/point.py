@@ -7,17 +7,20 @@ class Point:
     x: float
     y: float
 
-    def __mult__(self, other: "Point"):
+    def __mult__(self, other: "Point") -> "Point":
         return Point(self.x * other.x, self.y * other.y)
 
-    def __add__(self, other: "Point"):
+    def __add__(self, other: "Point") -> "Point":
         return Point(self.x + other.x, self.y + other.y)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Point({self.x}, {self.y})"
 
+    def to_tuple(self) -> tuple[float, float]:
+        return (self.x, self.y)
+
     @staticmethod
-    def randspawn(min_x: float, max_x: float, min_y: float, max_y: float):
+    def randspawn(min_x: float, max_x: float, min_y: float, max_y: float) -> "Point":
         random = Random()
 
         return Point(
