@@ -1,0 +1,22 @@
+[project]
+name = "noise-art-experiments"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "David Happel", email = "davidvhappel@proton.me" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "noise>=1.2.2",
+    "pillow>=12.3.0",
+    "pygame>=2.6.1",
+    "scipy>=1.18.1",
+]
+
+[project.scripts]
+noise-art-experiments = "noise_art_experiments:main"
+
+[build-system]
+requires = ["uv_build>=0.12.15,<0.13.0"]
+build-backend = "uv_build"

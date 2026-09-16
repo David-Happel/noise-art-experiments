@@ -29,6 +29,9 @@ def draw(t):
         points = np.array(
             [[noise[layer].eval(t, i), noise[layer].eval(t, i + 1000)] for i in range(20)])
 
+        # for point in points:
+        #     pygame.draw.circle(screen, color=(255 * (layer / layers), 0, 255 * (layer / layers)), center=point, radius=3)
+
         vor = Voronoi(points)
 
         for ridge in vor.ridge_vertices:
@@ -54,6 +57,9 @@ def draw(t):
 
         points = np.array(
             [[noise[layer].eval(t, i + 2000), noise[layer].eval(t, i + 3000)] for i in range(60)])
+
+        # for point in points:
+        #     pygame.draw.circle(screen, color=(0, 255 * (layer / layers), 0), center=point, radius=3)
 
         vor = Voronoi(points)
 
